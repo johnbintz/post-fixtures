@@ -15,4 +15,10 @@ class PostFixtures {
 			foreach ($posts as $post) {	wp_delete_post($post->ID); }
 		}
 	}
+
+	function remove_all_categories() {
+		foreach (get_all_category_ids() as $id) {
+			wp_delete_category($id);
+		}
+	}
 }

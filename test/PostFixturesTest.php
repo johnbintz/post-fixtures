@@ -52,4 +52,21 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(0, count($wp_test_expectations['posts']));
 		$this->assertEquals(0, count($wp_test_expectations['post_meta']));
 	}
+
+	function testRemoveAllCategories() {
+		global $wp_test_expectations;
+		update_option('default_category', 0);
+
+		for ($i = 0; $i < 5; ++$i) {
+			add_category($i, (object)array('slug' => 'test-' . $i));
+		}
+
+		$this->assertEquals(5, count($wp_test_expectations['categories']));
+
+		$this->pf->remove_all_categories();
+
+		$this->assertEquals(1, count($wp_test_expectations['categories']));
+		$result = get_category(0);
+		$this->assertTrue(isset($result->term_id));
+	}
 }
