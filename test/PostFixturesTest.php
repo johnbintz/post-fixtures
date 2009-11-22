@@ -106,4 +106,21 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 	function testProcessData($data, $expected_output) {
 		$this->assertEquals($expected_output, $this->pf->process_data($data));
 	}
+
+	function providerTestCreateCategories() {
+		return array(
+			array(false, array()),
+			array(array(), array()),
+			array(array('test'), array('test' => 1))
+		);
+	}
+
+	/**
+	 * @dataProvider providerTestCreateCategories
+	 */
+	function testCreateCategories($input, $expected_output) {
+		global $wp_test_expectations;
+
+		$this->assertEquals($expected_output, $this->pf->create_categories($input));
+	}
 }

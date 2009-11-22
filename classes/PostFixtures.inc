@@ -32,4 +32,14 @@ class PostFixtures {
 		}
 		return compact('posts', 'categories');
 	}
+
+	function create_categories($categories) {
+		$category_ids_by_slug = array();
+		if (is_array($categories)) {
+			foreach ($categories as $category) {
+				$category_ids_by_slug[$category] = wp_insert_category(array('slug' => $category));
+			}
+		}
+		return $category_ids_by_slug;
+	}
 }
