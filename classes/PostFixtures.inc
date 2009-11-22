@@ -42,4 +42,34 @@ class PostFixtures {
 		}
 		return $category_ids_by_slug;
 	}
+
+	function create_posts($posts, $categories) {
+		$post_ids_created = array();
+		if (is_array($posts)) {
+			foreach ($posts as $post) {
+				$id = wp_insert_post($post);
+				if ($id != 0) {
+					$post_ids_created[] = $id;
+					if (isset($post['categories'])) {
+						$all_categories = array();
+						foreach ($post['categories'] as $slug) {
+							if (isset($categories[$slug])) {
+								$all_categories[] = $categories[$slug];
+							}
+						}
+						wp_set_post_categories($id, $all_categories);
+					} else {
+						wp_set_post_categories($id, array(get_option('default_category')));
+					}
+
+					if (isset($post['metadata'])) {
+						foreach ($post['metadata'] as $key => $value) {
+							update_post_meta($id, $key, $value);
+						}
+					}
+				}
+			}
+		}
+		return $post_ids_created;
+	}
 }

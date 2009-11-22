@@ -119,8 +119,75 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 	 * @dataProvider providerTestCreateCategories
 	 */
 	function testCreateCategories($input, $expected_output) {
-		global $wp_test_expectations;
-
 		$this->assertEquals($expected_output, $this->pf->create_categories($input));
+	}
+
+	function providerTestCreatePosts() {
+		return array(
+			array(false, array(), false),
+			array(
+				array(),
+				array()
+			),
+			array(
+				array(
+					array(
+						'post_title' => 'test'
+					)
+				),
+				array(1),
+				array(1 => array(1))
+			),
+			array(
+				array(
+					array(
+						'post_title' => 'test',
+						'categories' => array('test2')
+					)
+				),
+				array(1),
+				array(1 => array(2))
+			),
+			array(
+				array(
+					array(
+						'post_title' => 'test',
+						'categories' => array('test2'),
+						'metadata' => array(
+							'test' => 'test2'
+						)
+					)
+				),
+				array(1),
+				array(1 => array(2)),
+				array(1 => array(
+					'test' => 'test2'
+				))
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider providerTestCreatePosts
+	 */
+	function testCreatePosts($posts, $expected_post_ids, $expected_post_categories = false, $expected_metadata = false) {
+		update_option('default_category', 1);
+		wp_insert_category(array('slug' => 'test'));
+
+		$this->assertEquals($expected_post_ids, $this->pf->create_posts($posts, array('test' => 1, 'test2' => 2)));
+
+		if (is_array($expected_post_categories)) {
+			foreach ($expected_post_categories as $post_id => $categories) {
+				$this->assertEquals($categories, wp_get_post_categories($post_id));
+			}
+		}
+
+		if (is_array($expected_metadata)) {
+			foreach ($expected_metadata as $post_id => $metadata_info) {
+				foreach ($metadata_info as $key => $value) {
+					$this->assertEquals($value, get_post_meta($post_id, $key, true));
+				}
+			}
+		}
 	}
 }
