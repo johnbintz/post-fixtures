@@ -29,4 +29,27 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 	function testParseJSON($input, $expected_output) {
 		$this->assertEquals($expected_output, $this->pf->parse_json($input));
 	}
+
+	function testRemoveAllPosts() {
+		global $wp_test_expectations;
+
+		$posts = array();
+
+		for ($i = 0; $i < 5; ++$i) {
+			$post = (object)array('ID' => $i);
+			wp_insert_post($post);
+			$posts[] = $post;
+			update_post_meta($i, md5(rand()), md5(rand()));
+		}
+
+		_set_up_get_posts_response('nopaging=1', $posts);
+
+		$this->assertEquals(5, count($wp_test_expectations['posts']));
+		$this->assertEquals(5, count($wp_test_expectations['post_meta']));
+
+		$this->pf->remove_all_posts();
+
+		$this->assertEquals(0, count($wp_test_expectations['posts']));
+		$this->assertEquals(0, count($wp_test_expectations['post_meta']));
+	}
 }

@@ -9,4 +9,10 @@ class PostFixtures {
 		}
 		return false;
 	}
+
+	function remove_all_posts() {
+		if (is_array($posts = get_posts('nopaging=1'))) {
+			foreach ($posts as $post) {	wp_delete_post($post->ID); }
+		}
+	}
 }
