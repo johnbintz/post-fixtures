@@ -21,4 +21,15 @@ class PostFixtures {
 			wp_delete_category($id);
 		}
 	}
+
+	function process_data($data) {
+		$posts = $data;
+		$categories = array();
+		foreach ($data as $post) {
+			if (isset($post['categories'])) {
+				$categories = array_merge($categories, $post['categories']);
+			}
+		}
+		return compact('posts', 'categories');
+	}
 }

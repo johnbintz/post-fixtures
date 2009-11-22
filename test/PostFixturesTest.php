@@ -69,4 +69,41 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 		$result = get_category(0);
 		$this->assertTrue(isset($result->term_id));
 	}
+
+	function providerTestProcessData() {
+		return array(
+			array(
+				array(
+					array(
+						'title' => 'test',
+						'categories' => array('test1', 'test2'),
+						'date' => '2009-01-01',
+						'metadata' => array(
+							'test' => 'test2'
+						)
+					)
+				),
+				array(
+					'posts' => array(
+						array(
+							'title' => 'test',
+							'categories' => array('test1', 'test2'),
+							'date' => '2009-01-01',
+							'metadata' => array(
+								'test' => 'test2'
+							)
+						)
+					),
+					'categories' => array('test1', 'test2')
+				)
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider providerTestProcessData
+	 */
+	function testProcessData($data, $expected_output) {
+		$this->assertEquals($expected_output, $this->pf->process_data($data));
+	}
 }
