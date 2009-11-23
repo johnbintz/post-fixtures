@@ -77,4 +77,9 @@ class PostFixtures {
 		$this->create_categories($data['categories']);
 		$this->create_posts($data['posts'], $data['categories']);
 	}
+
+	function remove() {
+		$this->remove_all_posts();
+		$this->remove_all_categories();
+	}
 }

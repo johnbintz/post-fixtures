@@ -198,4 +198,13 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 
 		$pf->create(array('posts' => 'posts', 'categories' => 'categories'));
 	}
+
+	function testRemove() {
+		$pf = $this->getMock('PostFixtures', array('remove_all_posts', 'remove_all_categories'));
+
+		$pf->expects($this->once())->method('remove_all_posts');
+		$pf->expects($this->once())->method('remove_all_categories');
+
+		$pf->remove();
+	}
 }
