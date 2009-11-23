@@ -113,12 +113,20 @@ class PostFixtures {
 	}
 
 	function process_data($data) {
-		$posts = $data;
+		$posts = array();
 		$categories = array();
-		foreach ($data as $post) {
-			$post = (array)$post;
-			if (isset($post['categories'])) {
-				$categories = array_merge($categories, $post['categories']);
+
+		foreach ($data as $type => $info) {
+			switch ($type) {
+				case 'posts':
+					$posts = $info;
+					foreach ($posts as $post) {
+						$post = (array)$post;
+						if (isset($post['categories'])) {
+							$categories = array_merge($categories, $post['categories']);
+						}
+					}
+					break;
 			}
 		}
 		$categories = array_unique($categories);
