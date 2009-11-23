@@ -111,7 +111,8 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 		return array(
 			array(false, array()),
 			array(array(), array()),
-			array(array('test'), array('test' => 1))
+			array(array('test'), array('test' => 1)),
+			array(array('test/test2'), array('test' => 1, 'test/test2' => 2)),
 		);
 	}
 
@@ -164,6 +165,16 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 					'test' => 'test2'
 				))
 			),
+			array(
+				array(
+					array(
+						'post_title' => 'test',
+						'categories' => array('test', 'test2/test3')
+					)
+				),
+				array(1),
+				array(1 => array(1,3))
+			),
 		);
 	}
 
@@ -174,7 +185,7 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 		update_option('default_category', 1);
 		wp_insert_category(array('slug' => 'test'));
 
-		$this->assertEquals($expected_post_ids, $this->pf->create_posts($posts, array('test' => 1, 'test2' => 2)));
+		$this->assertEquals($expected_post_ids, $this->pf->create_posts($posts, array('test' => 1, 'test2' => 2, 'test2/test3' => 3)));
 
 		if (is_array($expected_post_categories)) {
 			foreach ($expected_post_categories as $post_id => $categories) {

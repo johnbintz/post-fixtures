@@ -129,7 +129,13 @@ class PostFixtures {
 		$category_ids_by_slug = array();
 		if (is_array($categories)) {
 			foreach ($categories as $category) {
-				$category_ids_by_slug[$category] = wp_insert_category(array('cat_name' => $category, 'slug' => $category));
+				$nodes = explode('/', $category);
+				$parent = 0;
+				$joined_nodes = array();
+				foreach ($nodes as $node) {
+					$joined_nodes[] = $node;
+					$parent = $category_ids_by_slug[implode('/', $joined_nodes)] = wp_insert_category(array('cat_name' => $node, 'slug' => $node, 'category_parent' => $parent));
+				}
 			}
 		}
 		return $category_ids_by_slug;
