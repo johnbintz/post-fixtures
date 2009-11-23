@@ -28,6 +28,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 function __post_fixtures_plugins_loaded() {
 	if (version_compare(PHP_VERSION, '5.0.0') === 1) {
 		require_once('classes/PostFixtures.inc');
+		$post_fixtures = new PostFixtures();
+		$post_fixtures->init();
 	} else {
 		add_action('admin_notices', '__post_fixtures_admin_notices');
 	}

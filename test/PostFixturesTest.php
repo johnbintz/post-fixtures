@@ -42,7 +42,7 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 			update_post_meta($i, md5(rand()), md5(rand()));
 		}
 
-		_set_up_get_posts_response('nopaging=1', $posts);
+		_set_up_get_posts_response(array('numberposts' => '-1', 'post_status' => 'draft,pending,future,inherit,private,publish'), $posts);
 
 		$this->assertEquals(5, count($wp_test_expectations['posts']));
 		$this->assertEquals(5, count($wp_test_expectations['post_meta']));
