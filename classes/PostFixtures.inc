@@ -188,6 +188,7 @@ class PostFixtures {
 	function create($data) {
 		$categories_by_slug = $this->create_categories($data['categories']);
 		$this->create_posts($data['posts'], $categories_by_slug);
+		$this->process_blog_options($data['options'], $categories_by_slug);
 	}
 
 	function remove() {

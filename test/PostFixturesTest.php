@@ -220,11 +220,12 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 	}
 
 	function testCreate() {
-		$pf = $this->getMock('PostFixtures', array('create_posts', 'create_categories'));
-		$pf->expects($this->once())->method('create_posts')->with('posts');
-		$pf->expects($this->once())->method('create_categories')->with('categories');
+		$pf = $this->getMock('PostFixtures', array('create_posts', 'create_categories', 'process_blog_options'));
+		$pf->expects($this->once())->method('create_posts')->with('posts', 'processed');
+		$pf->expects($this->once())->method('create_categories')->with('categories')->will($this->returnValue('processed'));
+		$pf->expects($this->once())->method('process_blog_options')->with('options', 'processed');
 
-		$pf->create(array('posts' => 'posts', 'categories' => 'categories'));
+		$pf->create(array('posts' => 'posts', 'categories' => 'categories', 'options' => 'options'));
 	}
 
 	function testRemove() {
