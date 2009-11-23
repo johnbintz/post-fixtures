@@ -255,6 +255,10 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 				array('test' => '${category:category}'),
 				array('test' => '1')
 			),
+			array(
+				array('test' => '${cat:category}'),
+				array('test' => '1')
+			),
 		);
 	}
 

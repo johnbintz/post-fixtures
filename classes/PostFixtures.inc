@@ -209,7 +209,10 @@ class PostFixtures {
 		$value = $matches[0];
 		$parts = explode(':', $matches[1]);
 		if (count($parts) > 1) {
-			$source = array_shift($parts);
+			$source = strtolower(array_shift($parts));
+			switch ($source) {
+				case 'cat': $source = 'category'; break;
+			}
 			if (count($parts) == 1) {
 				$index = reset($parts);
 				if (isset($this->{"_${source}"})) {
