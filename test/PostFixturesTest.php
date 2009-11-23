@@ -96,9 +96,24 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 							)
 						)
 					),
-					'categories' => array('test1', 'test2')
+					'categories' => array('test1', 'test2'),
+					'options' => array()
 				)
 			),
+			array(
+				array(
+					'options' => array(
+						'test' => 'test2'
+					)
+				),
+				array(
+					'posts' => array(),
+					'categories' => array(),
+					'options' => array(
+						'test' => 'test2'
+					)
+				)
+			)
 		);
 	}
 

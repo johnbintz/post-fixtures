@@ -113,8 +113,7 @@ class PostFixtures {
 	}
 
 	function process_data($data) {
-		$posts = array();
-		$categories = array();
+		$posts = $categories = $options = array();
 
 		foreach ($data as $type => $info) {
 			switch ($type) {
@@ -127,10 +126,13 @@ class PostFixtures {
 						}
 					}
 					break;
+				case 'options':
+					$options = $info;
+					break;
 			}
 		}
 		$categories = array_unique($categories);
-		return compact('posts', 'categories');
+		return compact('posts', 'categories', 'options');
 	}
 
 	function create_categories($categories) {
