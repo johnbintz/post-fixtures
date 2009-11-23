@@ -192,4 +192,31 @@ class PostFixtures {
 		$this->remove_all_posts();
 		$this->remove_all_categories();
 	}
+
+	function process_blog_options($options, $categories) {
+		$this->_category = $categories;
+		foreach ($options as $option => $value) {
+			$value = preg_replace_callback('#\$\{([^\}]+)\}#', array(&$this, '_process_blog_options_callback'), $value);
+			update_option($option, $value);
+		}
+		unset($this->_category);
+	}
+
+	function _process_blog_options_callback($matches) {
+		$value = $matches[0];
+		$parts = explode(':', $matches[1]);
+		if (count($parts) > 1) {
+			$source = array_shift($parts);
+			if (count($parts) == 1) {
+				$index = reset($parts);
+				if (isset($this->{"_${source}"})) {
+				  if (isset($this->{"_${source}"}[$index])) {
+				  	$value = $this->{"_${source}"}[$index];
+				  }
+				}
+			}
+		}
+
+		return $value;
+	}
 }

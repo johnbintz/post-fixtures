@@ -74,12 +74,14 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 		return array(
 			array(
 				array(
-					array(
-						'title' => 'test',
-						'categories' => array('test1', 'test2'),
-						'date' => '2009-01-01',
-						'metadata' => array(
-							'test' => 'test2'
+					'posts' => array(
+						array(
+							'title' => 'test',
+							'categories' => array('test1', 'test2'),
+							'date' => '2009-01-01',
+							'metadata' => array(
+								'test' => 'test2'
+							)
 						)
 					)
 				),
@@ -217,5 +219,39 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 		$pf->expects($this->once())->method('remove_all_categories');
 
 		$pf->remove();
+	}
+
+	function providerTestProcessBlogOptions() {
+		return array(
+			array(
+				array(),
+				array('test' => 'test')
+			),
+			array(
+				array('test2' => 'test2'),
+				array('test' => 'test', 'test2' => 'test2')
+			),
+			array(
+				array('test' => false),
+				array('test' => false)
+			),
+			array(
+				array('test' => '${category:category}'),
+				array('test' => '1')
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider providerTestProcessBlogOptions
+	 */
+	function testProcessBlogOptions($data, $expected_fields) {
+		update_option('test', 'test');
+
+		$this->pf->process_blog_options($data, array('category' => 1));
+
+		foreach ($expected_fields as $name => $value) {
+			$this->assertEquals($value, get_option($name));
+		}
 	}
 }
