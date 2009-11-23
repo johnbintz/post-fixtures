@@ -72,4 +72,9 @@ class PostFixtures {
 		}
 		return $post_ids_created;
 	}
+
+	function create($data) {
+		$this->create_categories($data['categories']);
+		$this->create_posts($data['posts'], $data['categories']);
+	}
 }
