@@ -9,15 +9,29 @@ class PostFixtures {
 	/**
 	 * Initialize the plugin.
 	 */
+	// @codeCoverageIgnoreStart
 	function init() {
-		add_action('admin_menu', array(&$this, 'admin_menu'));
-		add_action('admin_notices', array(&$this, 'admin_notices'));
-		add_action("admin_enqueue_scripts", array(&$this, 'admin_enqueue_scripts'), 10, 1);
+		foreach (array(
+			'admin_init' => array(),
+			'admin_menu' => array(),
+			'admin_notices' => array(),
+			'admin_enqueue_scripts' => array(10, 1),
+		) as $method => $additional_params) {
+			call_user_func_array(
+				'add_action',
+				array_merge(
+					array($method, array(&$this, $method)),
+					$additional_params
+				)
+			);
+		}
 	}
+	// @codeCoverageIgnoreEnd
 
 	/**
 	 * Print any admin notices.
 	 */
+	// @codeCoverageIgnoreStart
 	function admin_notices() {
 		if (!empty($this->messages)) { ?>
 			<div class="fade updated">
@@ -27,6 +41,7 @@ class PostFixtures {
 			</div>
 		<?php }
 	}
+	// @codeCoverageIgnoreEnd
 
 	/**
 	 * Handle an update.
@@ -49,30 +64,39 @@ class PostFixtures {
 	/**
 	 * Handle the admin_menu action.
 	 */
+	// @codeCoverageIgnoreStart
 	function admin_menu() {
 		global $plugin_page;
 
 		$this->hook_suffix = add_submenu_page('tools.php', __('Post Fixtures', 'post-fixtures'), __('Post Fixtures', 'post-fixtures'), 'manage_options', 'post-fixtures', array(&$this, 'render_admin'));
+	}
+	// @codeCoverageIgnoreEnd
 
-		if (isset($_POST['pf'])) {
-			if (isset($_POST['pf']['_nonce'])) {
-				if (wp_verify_nonce($_POST['pf']['_nonce'], 'post-fixtures')) {
-					$this->handle_update($_POST['pf']);
-				}
+	/**
+	 * Handle the admin_init action.
+	 * This is where the processing happens.
+	 */
+	function admin_init() {
+		if (isset($_POST['pf']['_nonce'])) {
+			if (wp_verify_nonce($_POST['pf']['_nonce'], 'post-fixtures')) {
+				$this->handle_update($_POST['pf']);
 			}
 		}
+		unset($_POST['pf']);
 	}
 
 	/**
 	 * Handle the admin_enqueue_scripts action.
 	 * @param string $hook_suffix The hook suffix for the page being loaded.
 	 */
+	// @codeCoverageIgnoreStart
 	function admin_enqueue_scripts($hook_suffix) {
 		if ($this->hook_suffix == $hook_suffix) {
 			wp_enqueue_script('jquery');
 			wp_enqueue_style('post-fixtures', plugin_dir_url(dirname(__FILE__)) . 'style.css');
 		}
 	}
+	// @codeCoverageIgnoreEnd
 
 	/**
 	 * Render the admin page.

@@ -9,6 +9,11 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 		_reset_wp();
 
 		$this->pf = new PostFixtures();
+		$_POST = array();
+	}
+
+	function tearDown() {
+		$_POST = array();
 	}
 
 	function providerTestParseJSON() {
@@ -277,5 +282,52 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 				$this->assertTrue(!isset($all_options[$name]));
 			}
 		}
+	}
+
+	function providerTestHandleUpdate() {
+		return array(
+			array(array(), false),
+			array(array('is_ok' => true, 'data' => '{]'), false),
+			array(array('is_ok' => true, 'data' => '{"test": "test"}'), true),
+		);
+	}
+
+	/**
+	 * @dataProvider providerTestHandleUpdate
+	 */
+	function testHandleUpdate($info, $should_succeed) {
+		$pf = $this->getMock('PostFixtures', array('process_data', 'remove', 'create'));
+
+		foreach (array('process_data', 'remove', 'create') as $method) {
+			$pf->expects($this->{$should_succeed ? 'once' : 'never'}())->method($method);
+		}
+
+		$pf->handle_update($info);
+	}
+
+	function providerTestAdminInit() {
+		return array(
+			array(array(), false),
+			array(array('pf' => false), false),
+			array(array('pf' => array()), false),
+			array(array('pf' => array('_nonce' => false)), false),
+			array(array('pf' => array('_nonce' => 'post-fixtures')), true),
+		);
+	}
+
+	/**
+	 * @dataProvider providerTestAdminInit
+	 */
+	function testAdminInit($post, $should_update) {
+		$_POST = $post;
+
+		$pf = $this->getMock('PostFixtures', array('handle_update'));
+		$pf->expects($this->{$should_update ? 'once' : 'never'}())->method('handle_update');
+
+		_set_valid_nonce('post-fixtures', 'post-fixtures');
+
+		$pf->admin_init();
+
+		$this->assertTrue(!isset($_POST['pf']));
 	}
 }
