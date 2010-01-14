@@ -229,8 +229,12 @@ class PostFixtures {
 	function process_blog_options($options, $categories) {
 		$this->_category = $categories;
 		foreach ($options as $option => $value) {
-			$value = preg_replace_callback('#\$\{([^\}]+)\}#', array(&$this, '_process_blog_options_callback'), $value);
-			update_option($option, $value);
+			if ($value === false) {
+				delete_option($option);
+			} else {
+				$value = preg_replace_callback('#\$\{([^\}]+)\}#', array(&$this, '_process_blog_options_callback'), $value);
+				update_option($option, $value);
+			}
 		}
 		unset($this->_category);
 	}

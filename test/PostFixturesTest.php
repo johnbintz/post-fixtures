@@ -272,6 +272,10 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 
 		foreach ($expected_fields as $name => $value) {
 			$this->assertEquals($value, get_option($name));
+			if ($value === false) {
+				$all_options = get_alloptions();
+				$this->assertTrue(!isset($all_options[$name]));
+			}
 		}
 	}
 }
