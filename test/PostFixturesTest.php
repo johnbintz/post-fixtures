@@ -19,7 +19,7 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 			array('{}', array()),
 			array('[]', array()),
 			array('["test", "test2"]', array('test', 'test2')),
-			array('{"one": "test", "two": "test2"}', array('test', 'test2'))
+			array('{"one": "test", "two": "test2"}', array('one' => 'test', 'two' => 'test2'))
 		);
 	}
 
