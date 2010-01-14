@@ -1,0 +1,6 @@
+@CHARSET "UTF-8";
+
+#post-fixtures-form label {
+	padding: 5px 0;
+	display: block
+}
