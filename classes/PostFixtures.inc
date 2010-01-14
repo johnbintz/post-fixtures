@@ -70,6 +70,7 @@ class PostFixtures {
 	function admin_enqueue_scripts($hook_suffix) {
 		if ($this->hook_suffix == $hook_suffix) {
 			wp_enqueue_script('jquery');
+			wp_enqueue_style('post-fixtures', plugin_dir_url(dirname(__FILE__)) . 'style.css');
 		}
 	}
 
