@@ -1,13 +1,23 @@
 <?php
 
+/**
+ * Set up fresh WordPress data quickly and easily.
+ */
 class PostFixtures {
 	var $messages;
 
+	/**
+	 * Initialize the plugin.
+	 */
 	function init() {
 		add_action('admin_menu', array(&$this, 'admin_menu'));
 		add_action('admin_notices', array(&$this, 'admin_notices'));
+		add_action("admin_enqueue_scripts", array(&$this, 'admin_enqueue_scripts'), 10, 1);
 	}
 
+	/**
+	 * Print any admin notices.
+	 */
 	function admin_notices() {
 		if (!empty($this->messages)) { ?>
 			<div class="fade updated">
@@ -18,6 +28,10 @@ class PostFixtures {
 		<?php }
 	}
 
+	/**
+	 * Handle an update.
+	 * @param array $info The post info.
+	 */
 	function handle_update($info) {
 		if (isset($info['is_ok'])) {
       $data = $this->parse_json(stripslashes($info['data']));
@@ -25,21 +39,20 @@ class PostFixtures {
       	$data = $this->process_data($data);
       	$this->remove();
       	$this->create($data);
-      	$this->messages[] = "New data set loaded into WordPress.";
+      	$this->messages[] = __("New data set loaded into WordPress.", 'post-fixtures');
       } else {
-      	$this->messages[] = "Data is not valid JSON.";
+      	$this->messages[] = __("Data is not valid JSON.", 'post-fixtures');
       }
 		}
 	}
 
+	/**
+	 * Handle the admin_menu action.
+	 */
 	function admin_menu() {
 		global $plugin_page;
 
-		add_submenu_page('tools.php', __('Post Fixtures', 'post-fixtures'), __('Post Fixtures', 'post-fixtures'), 'manage_options', 'post-fixtures', array(&$this, 'render_admin'));
-
-		if ($plugin_page == 'post-fixtures') {
-			wp_enqueue_script('jquery');
-		}
+		$this->hook_suffix = add_submenu_page('tools.php', __('Post Fixtures', 'post-fixtures'), __('Post Fixtures', 'post-fixtures'), 'manage_options', 'post-fixtures', array(&$this, 'render_admin'));
 
 		if (isset($_POST['pf'])) {
 			if (isset($_POST['pf']['_nonce'])) {
@@ -50,6 +63,19 @@ class PostFixtures {
 		}
 	}
 
+	/**
+	 * Handle the admin_enqueue_scripts action.
+	 * @param string $hook_suffix The hook suffix for the page being loaded.
+	 */
+	function admin_enqueue_scripts($hook_suffix) {
+		if ($this->hook_suffix == $hook_suffix) {
+			wp_enqueue_script('jquery');
+		}
+	}
+
+	/**
+	 * Render the admin page.
+	 */
 	function render_admin() { ?>
 		<div class="wrap">
 			<h2><?php _e('Post Fixtures', 'post-fixtures') ?></h2>
@@ -91,6 +117,11 @@ class PostFixtures {
 
 	// data handling
 
+	/**
+	 * Parse incoming JSON data.
+	 * @param string $input The JSON data to parse.
+	 * @return array|false An array of JSON data, or false if invalid.
+	 */
 	function parse_json($input) {
 		if (($data = json_decode($input)) !== false) {
 			if (is_array($data) || is_object($data)) {
@@ -100,18 +131,30 @@ class PostFixtures {
 		return false;
 	}
 
+	/**
+	 * Remove all posts in the database.
+	 * This is done via the WP interface so that associated comments are also deleted.
+	 */
 	function remove_all_posts() {
 		if (is_array($posts = get_posts(array('numberposts' => '-1', 'post_status' => 'draft,pending,future,inherit,private,publish')))) {
 			foreach ($posts as $post) {	wp_delete_post($post->ID); }
 		}
 	}
 
+	/**
+	 * Remove all categories in the database.
+	 */
 	function remove_all_categories() {
 		foreach (get_all_category_ids() as $id) {
 			wp_delete_category($id);
 		}
 	}
 
+	/**
+	 * Process the provided data and assemble a list of objects to create in the database.
+	 * @param array $data The data to parse.
+	 * @return array The list of objects to create.
+	 */
 	function process_data($data) {
 		$posts = $categories = $options = array();
 
@@ -135,6 +178,10 @@ class PostFixtures {
 		return compact('posts', 'categories', 'options');
 	}
 
+	/**
+	 * The categories to create.
+	 * Categories are passed as name/name/name, with parent -> child relationships being constructed as necessary.
+	 */
 	function create_categories($categories) {
 		$category_ids_by_slug = array();
 		if (is_array($categories)) {
@@ -151,6 +198,11 @@ class PostFixtures {
 		return $category_ids_by_slug;
 	}
 
+	/**
+	 * The posts to create.
+	 * Post data is passed in just as if you were using wp_insert_post().
+	 * Categories are assigned using slug names separated by commas.
+	 */
 	function create_posts($posts, $categories) {
 		$post_ids_created = array();
 		if (is_array($posts)) {
@@ -185,17 +237,30 @@ class PostFixtures {
 		return $post_ids_created;
 	}
 
+	/**
+	 * Create everything from the provided data.
+	 * @param array $data The data to use in creation.
+	 */
 	function create($data) {
 		$categories_by_slug = $this->create_categories($data['categories']);
 		$this->create_posts($data['posts'], $categories_by_slug);
 		$this->process_blog_options($data['options'], $categories_by_slug);
 	}
 
+	/**
+	 * Remove everything from the WordPress database that Post Fixures handles.
+	 */
 	function remove() {
 		$this->remove_all_posts();
 		$this->remove_all_categories();
 	}
 
+	/**
+	 * Update the provided blog options.
+	 * Option values can have other values injected into them. Currently only category slug names are available.
+	 * @param array $options The options to set or unset. Pass in `false` to unset them.
+	 * @param array $categories The list of categories to work with in string replacement.
+	 */
 	function process_blog_options($options, $categories) {
 		$this->_category = $categories;
 		foreach ($options as $option => $value) {
@@ -205,6 +270,11 @@ class PostFixtures {
 		unset($this->_category);
 	}
 
+	/**
+	 * Callback for process_blog_options
+	 * @param array $matches Matches from preg_replace_callback
+	 * @return string The replacement value for the match.
+	 */
 	function _process_blog_options_callback($matches) {
 		$value = $matches[0];
 		$parts = explode(':', $matches[1]);
