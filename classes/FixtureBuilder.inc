@@ -59,6 +59,13 @@ class FixtureBuilder {
 		return $this;
 	}
 
+	function content($content) {
+		$this->check_correct_type('post');
+
+		$this->current_object['post']['post_content'] = $content;
+		return $this;
+	}
+
 	function tags($tags) {
 		$this->check_correct_type('post');
 
@@ -92,6 +99,11 @@ class FixtureBuilder {
 		$this->check_correct_type('post');
 
 		$this->current_object['post']['metadata'][$key] = $value;
+		return $this;
+	}
+
+	function option($name, $value) {
+		update_option($name, $value);
 		return $this;
 	}
 

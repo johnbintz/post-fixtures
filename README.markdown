@@ -39,6 +39,8 @@ create a new Issue.
 
 ## Example Fixture
 
+### JSON
+
 <pre>
 {
 	"posts": [
@@ -55,7 +57,8 @@ create a new Issue.
 						"lots", "of", "nested", "datatypes"
 					]
 				}
-			}
+			},
+			"tags": "tag 1,tag2"
 		},
 		{
 			"post_date": "2010-01-01 10:00am",
@@ -73,3 +76,6 @@ create a new Issue.
 	}
 }
 </pre>
+
+### PHP
+

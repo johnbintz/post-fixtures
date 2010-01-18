@@ -69,6 +69,9 @@ class PostFixtures {
 					$builder = new FixtureBuilder();
 					include($file);
 					$builder->finalize();
+
+					$this->messages[] = __("New data set loaded into WordPress.", 'post-fixtures');
+
 					break;
 			}
 		}

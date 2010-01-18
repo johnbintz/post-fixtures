@@ -127,6 +127,10 @@ class FixtureBuilderTest extends PHPUnit_Framework_TestCase {
 						array('2010-01-01')
 					),
 					array(
+						'content',
+						array('Post content')
+					),
+					array(
 						'categories',
 						array('test')
 					),
@@ -141,6 +145,7 @@ class FixtureBuilderTest extends PHPUnit_Framework_TestCase {
 				),
 				(object)array(
 					'post_title' => 'Post title',
+					'post_content' => 'Post content',
 					'post_type' => 'post',
 					'post_date' => '2010-01-01',
 					'post_status' => 'publish',
@@ -150,6 +155,7 @@ class FixtureBuilderTest extends PHPUnit_Framework_TestCase {
 					'posts' => array(
 						1 => (object)array(
 							'post_title' => 'Post title',
+							'post_content' => 'Post content',
 							'post_type' => 'post',
 							'post_date' => '2010-01-01',
 							'post_status' => 'publish',
@@ -168,7 +174,7 @@ class FixtureBuilderTest extends PHPUnit_Framework_TestCase {
 						)
 					)
 				)
-			)
+			),
 		);
 	}
 
@@ -227,5 +233,12 @@ class FixtureBuilderTest extends PHPUnit_Framework_TestCase {
 		$fb->expects($this->at(4))->method('build_post')->with(array('post' => 'post4'));
 
 		$fb->finalize();
+	}
+
+	function testOption() {
+		$fb = new FixtureBuilder();
+		$fb->option('test', 'value');
+
+		$this->assertEquals('value', get_option('test'));
 	}
 }
