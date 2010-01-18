@@ -9,8 +9,20 @@
 
 	<form action="" method="post" id="post-fixtures-form">
 		<input type="hidden" name="pf[_nonce]" value="<?php echo wp_create_nonce('post-fixtures') ?>" />
-		<h3><?php _e('JSON data to load into the database:', 'post-fixtures') ?></h3>
-		<textarea name="pf[data]" rows="20" style="width: 100%"></textarea>
+		<div style="overflow: hidden">
+			<div style="float: left;display: inline;width: 60%">
+				<h3><?php _e('JSON data to load into the database:', 'post-fixtures') ?></h3>
+				<textarea name="pf[data]" rows="20" style="width: 100%"></textarea>
+			</div>
+			<div style="float: left;display: inline;width: 38%;margin-left:2%">
+				<h3><?php _e('Pre-built fixtures:', 'post-fixtures') ?></h3>
+				<ul id="pre-built-fixture-holder">
+					<?php foreach ($fixtures as $fixture) { ?>
+						<li><a href="<?php echo esc_attr($fixture) ?>"><?php echo esc_html($fixture) ?></a></li>
+					<?php } ?>
+				</ul>
+			</div>
+		</div>
 		<label>
 			<input type="checkbox" name="pf[is_ok]" value="yes" /> <?php _e('Yes, I want Post Fixtures to <strong>delete all of my data and load this data instead.</strong>', 'post-fixtures') ?><br />
 		</label>
@@ -26,6 +38,11 @@
 
 			$('#post-fixtures-additional-options').hide();
 			$('input[name*=is_ok]').get(0).checked = false;
+
+			$('#pre-built-fixture-holder a').click(function() {
+				$('textarea[name*=data]').val('file:' + $(this).attr('href'));
+				return false;
+			});
 
 			$('#post-fixtures-form').submit(function() {
 				var checkbox = $('input[name*=is_ok]', this.target).get(0);

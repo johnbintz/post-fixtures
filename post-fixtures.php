@@ -27,7 +27,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 function __post_fixtures_plugins_loaded() {
 	if (version_compare(PHP_VERSION, '5.0.0') === 1) {
-		require_once('classes/PostFixtures.inc');
+		foreach (glob(dirname(__FILE__) . '/classes/*.inc') as $file) {
+			require_once($file);
+		}
 		$post_fixtures = new PostFixtures();
 		$post_fixtures->init();
 	} else {

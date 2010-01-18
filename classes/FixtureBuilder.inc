@@ -64,6 +64,7 @@ class FixtureBuilder {
 			$this->ensure_type($this->current_object['type']);
 			$this->{"defer_{$this->current_object['type']}"}($this->current_object);
 		}
+		unset($this->current_object);
 	}
 
 	function build() {
@@ -113,6 +114,7 @@ class FixtureBuilder {
 					$category_ids_by_slug = array_merge($category_ids_by_slug, PostFixtures::create_category($category));
 				}
 				$category_ids = array_values($category_ids_by_slug);
+				PostFixtures::set_post_categories($post_id, $category_ids);
 			}
 
 			$metadata = array();
@@ -127,5 +129,24 @@ class FixtureBuilder {
 		// @codeCoverageIgnoreStart
 		return false;
 		// @codeCoverageIgnoreEnd
+	}
+
+	function finalize() {
+		$this->defer();
+
+		foreach ($this->deferred_builds as $type => $entries) {
+			foreach ($entries as $entry) {
+				$object = null;
+				switch ($type) {
+					case 'category':
+						$object = array('name' => $entry);
+						break;
+					case 'post':
+						$object = array('post' => $entry);
+						break;
+				}
+				$this->{"build_${type}"}($object);
+			}
+		}
 	}
 }

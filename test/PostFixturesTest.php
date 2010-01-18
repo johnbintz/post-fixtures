@@ -288,25 +288,52 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 		}
 	}
 
-	function providerTestHandleUpdate() {
+	function providerTestHandleJSON() {
 		return array(
-			array(array(), false),
-			array(array('is_ok' => true, 'data' => '{]'), false),
-			array(array('is_ok' => true, 'data' => '{"test": "test"}'), true),
+			array('', false),
+			array('{]', false),
+			array('{"test": "test"}', true),
 		);
 	}
 
 	/**
-	 * @dataProvider providerTestHandleUpdate
+	 * @dataProvider providerTestHandleJSON
 	 */
-	function testHandleUpdate($info, $should_succeed) {
+	function testHandleJSON($info, $should_succeed) {
 		$pf = $this->getMock('PostFixtures', array('process_data', 'remove', 'create'));
 
 		foreach (array('process_data', 'remove', 'create') as $method) {
 			$pf->expects($this->{$should_succeed ? 'once' : 'never'}())->method($method);
 		}
 
-		$pf->handle_update($info);
+		$pf->handle_json($info);
+	}
+
+	function providerTestHandleUpdate() {
+		return array(
+			array(
+				array(), false
+			),
+			array(
+				array('is_ok' => true, 'data' => 'json'), array('handle_json', 'json')
+			),
+			array(
+				array('is_ok' => true, 'data' => 'file:test'), array('handle_load_file', 'test')
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider providerTestHandleUpdate
+	 */
+	function testHandleUpdate($input, $expected_method) {
+		$pf = $this->getMock('PostFixtures', array('handle_load_file', 'handle_json'));
+
+		if (!empty($expected_method)) {
+			$pf->expects($this->once())->method($expected_method[0])->with($expected_method[1]);
+		}
+
+		$pf->handle_update($input);
 	}
 
 	function providerTestAdminInit() {

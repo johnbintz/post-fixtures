@@ -204,4 +204,21 @@ class FixtureBuilderTest extends PHPUnit_Framework_TestCase {
 
 		$builder->build();
 	}
+
+	function testFinalize() {
+		$fb = $this->getMock('FixtureBuilder', array('defer', 'build_category', 'build_post'));
+
+		$fb->deferred_builds = array(
+			'category' => array('test', 'test2'),
+			'post' => array('post3', 'post4')
+		);
+
+		$fb->expects($this->at(0))->method('defer');
+		$fb->expects($this->at(1))->method('build_category')->with(array('name' => 'test'));
+		$fb->expects($this->at(2))->method('build_category')->with(array('name' => 'test2'));
+		$fb->expects($this->at(3))->method('build_post')->with(array('post' => 'post3'));
+		$fb->expects($this->at(4))->method('build_post')->with(array('post' => 'post4'));
+
+		$fb->finalize();
+	}
 }

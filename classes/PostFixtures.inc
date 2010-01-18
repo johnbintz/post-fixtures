@@ -49,15 +49,40 @@ class PostFixtures {
 	 */
 	function handle_update($info) {
 		if (isset($info['is_ok'])) {
-      $data = $this->parse_json(stripslashes($info['data']));
-      if (!empty($data)) {
-      	$data = $this->process_data($data);
-      	$this->remove();
-      	$this->create($data);
-      	$this->messages[] = __("New data set loaded into WordPress.", 'post-fixtures');
-      } else {
-      	$this->messages[] = __("Data is not valid JSON.", 'post-fixtures');
-      }
+			if (strpos($info['data'], 'file:') === 0) {
+				$this->handle_load_file(substr($info['data'], 5));
+			} else {
+				$this->handle_json($info['data']);
+			}
+		}
+	}
+
+	function handle_load_file($file) {
+		$file = realpath($this->wpcontent_path() . '/' . $file);
+		if (file_exists($file)) {
+			switch (pathinfo($file, PATHINFO_EXTENSION)) {
+				case "json":
+					$this->handle_json(file_get_contents($file));
+					break;
+				case "inc";
+					$this->remove();
+					$builder = new FixtureBuilder();
+					include($file);
+					$builder->finalize();
+					break;
+			}
+		}
+	}
+
+	function handle_json($input) {
+		$data = $this->parse_json(stripslashes($input));
+		if (!empty($data)) {
+			$data = $this->process_data($data);
+			$this->remove();
+			$this->create($data);
+			$this->messages[] = __("New data set loaded into WordPress.", 'post-fixtures');
+		} else {
+			$this->messages[] = __("Data is not valid JSON.", 'post-fixtures');
 		}
 	}
 
@@ -128,7 +153,7 @@ class PostFixtures {
 		$dh = opendir($dir);
 		$is_fixture_dir = (basename($dir) === 'fixtures');
 		while ($file = readdir($dh)) {
-		  if ($file[0] != '.') {
+			if ($file[0] != '.') {
 				$target = $dir . '/' . $file;
 				if ($is_fixture_dir) {
 					if (is_file($target)) {
@@ -286,6 +311,10 @@ class PostFixtures {
 		update_post_meta($post_id, $key, $value);
 	}
 
+	function set_post_categories($post_id, $categories) {
+		wp_set_post_categories($post_id, $categories);
+	}
+
 	/**
 	 * Create everything from the provided data.
 	 * @param array $data The data to use in creation.
@@ -339,9 +368,9 @@ class PostFixtures {
 			if (count($parts) == 1) {
 				$index = reset($parts);
 				if (isset($this->{"_${source}"})) {
-				  if (isset($this->{"_${source}"}[$index])) {
-				  	$value = $this->{"_${source}"}[$index];
-				  }
+					if (isset($this->{"_${source}"}[$index])) {
+						$value = $this->{"_${source}"}[$index];
+					}
 				}
 			}
 		}
