@@ -62,15 +62,71 @@ class FixtureBuilder {
 	function defer() {
 		if (!empty($this->current_object)) {
 			$this->ensure_type($this->current_object['type']);
-			$this->{"build_{$this->current_object['type']}"}($this->current_object);
+			$this->{"defer_{$this->current_object['type']}"}($this->current_object);
 		}
 	}
 
+	function build() {
+		if (!empty($this->current_object)) {
+			$this->ensure_type($this->current_object['type']);
+			return $this->{"build_{$this->current_object['type']}"}($this->current_object);
+		}
+	}
+
+	function categories($categories) {
+		$this->check_correct_type('post');
+
+		$this->current_object['post']['categories'] = explode(',', $categories);
+		return $this;
+	}
+
+	function metadata($key, $value) {
+		$this->check_correct_type('post');
+
+		if (!isset($this->current_object['post'])) {
+			$this->current_object['post'] = array();
+		}
+		$this->current_object['post']['metadata'][$key] = $value;
+		return $this;
+	}
+
+	function defer_category($obj) {
+		$this->deferred_builds['category'] = array_merge($this->deferred_builds['category'], explode(',', $obj['name']));
+	}
+
+	function defer_post($obj) {
+		$this->deferred_builds['post'][] = $obj['post'];
+	}
+
 	function build_category($obj) {
-		$this->deferred_builds['category'] = array_merge($this->deferred_builds['category'], explode('/', $obj['name']));
+		return PostFixtures::create_category($obj['name']);
 	}
 
 	function build_post($obj) {
-		$this->deferred_builds['post'][] = $obj['post'];
+		$post_obj = $obj['post'];
+		foreach (array('categories', 'metadata') as $field) {
+			unset($post_obj[$field]);
+		}
+		$post_id = PostFixtures::create_post($post_obj);
+		if ($post_id != 0) {
+			$category_ids  = array();
+			if (isset($obj['post']['categories'])) {
+				$category_ids_by_slug = array();
+				foreach ($obj['post']['categories'] as $category) {
+					$category_ids_by_slug = array_merge($category_ids_by_slug, PostFixtures::create_category($category));
+				}
+				$category_ids = array_values($category_ids_by_slug);
+			}
+
+			$metadata = array();
+			if (isset($obj['post']['metadata'])) {
+				foreach ($obj['post']['metadata'] as $key => $value) {
+					PostFixtures::create_post_metadata($post_id, $key, $value);
+				}
+			}
+
+			return get_post($post_id);
+		}
+		return false;
 	}
 }

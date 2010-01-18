@@ -176,14 +176,20 @@ class PostFixtures {
 		$category_ids_by_slug = array();
 		if (is_array($categories)) {
 			foreach ($categories as $category) {
-				$nodes = explode('/', $category);
-				$parent = 0;
-				$joined_nodes = array();
-				foreach ($nodes as $node) {
-					$joined_nodes[] = $node;
-					$parent = $category_ids_by_slug[implode('/', $joined_nodes)] = wp_insert_category(array('cat_name' => $node, 'slug' => $node, 'category_parent' => $parent));
-				}
+				$category_ids_by_slug = array_merge($category_ids_by_slug, $this->create_category($category));
 			}
+		}
+		return $category_ids_by_slug;
+	}
+
+	function create_category($category) {
+		$category_ids_by_slug = array();
+		$nodes = explode('/', $category);
+		$parent = 0;
+		$joined_nodes = array();
+		foreach ($nodes as $node) {
+			$joined_nodes[] = $node;
+			$parent = $category_ids_by_slug[implode('/', $joined_nodes)] = wp_insert_category(array('cat_name' => $node, 'category_nicename' => $node, 'category_parent' => $parent));
 		}
 		return $category_ids_by_slug;
 	}
@@ -197,11 +203,7 @@ class PostFixtures {
 		$post_ids_created = array();
 		if (is_array($posts)) {
 			foreach ($posts as $post) {
-				$post = (array)$post;
-				if (!isset($post['post_status'])) {
-					$post['post_status'] = 'publish';
-				}
-				$id = wp_insert_post($post);
+				$id = $this->create_post($post);
 				if ($id != 0) {
 					$post_ids_created[] = $id;
 					if (isset($post['categories'])) {
@@ -218,13 +220,25 @@ class PostFixtures {
 
 					if (isset($post['metadata'])) {
 						foreach ($post['metadata'] as $key => $value) {
-							update_post_meta($id, $key, $value);
+							$this->create_post_metadata($id, $key, $value);
 						}
 					}
 				}
 			}
 		}
 		return $post_ids_created;
+	}
+
+	function create_post($post) {
+		$post = (array)$post;
+		if (!isset($post['post_status'])) {
+			$post['post_status'] = 'publish';
+		}
+		return wp_insert_post($post);
+	}
+
+	function create_post_metadata($post_id, $key, $value) {
+		update_post_meta($post_id, $key, $value);
 	}
 
 	/**
