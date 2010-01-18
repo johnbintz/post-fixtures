@@ -2,6 +2,7 @@
 
 require_once('PHPUnit/Framework.php');
 require_once('MockPress/mockpress.php');
+require_once('vfsStream/vfsStream.php');
 require_once(dirname(__FILE__) . '/../classes/PostFixtures.inc');
 
 class PostFixturesTest extends PHPUnit_Framework_TestCase {
@@ -10,6 +11,9 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 
 		$this->pf = new PostFixtures();
 		$_POST = array();
+
+		vfsStreamWrapper::register();
+		vfsStreamWrapper::setRoot(new vfsStreamDirectory('root'));
 	}
 
 	function tearDown() {
@@ -329,5 +333,28 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 		$pf->admin_init();
 
 		$this->assertTrue(!isset($_POST['pf']));
+	}
+
+	function testRecurseDirectories() {
+		mkdir(vfsStream::url('root/dir/fixtures'), 0666, true);
+
+		foreach (array(
+			'dir/test.json',
+			'dir/test.inc',
+			'dir/fixtures/test',
+			'dir/fixtures/test.json',
+			'dir/fixtures/test.inc',
+		) as $path) {
+			$path = vfsStream::url("root/${path}");
+			file_put_contents($path, $path);
+		}
+
+		$pf = $this->getMock('PostFixtures', array('wpcontent_path'));
+		$pf->expects($this->once())->method('wpcontent_path')->will($this->returnValue(vfsStream::url('root')));
+
+		$this->assertEquals(array(
+			vfsStream::url('root/dir/fixtures/test.json'),
+			vfsStream::url('root/dir/fixtures/test.inc'),
+		), $pf->find_fixtures());
 	}
 }

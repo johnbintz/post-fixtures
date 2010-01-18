@@ -101,8 +101,49 @@ class PostFixtures {
 	/**
 	 * Render the admin page.
 	 */
+	// @codeCoverageIgnoreStart
 	function render_admin() {
+
+
 		include(dirname(__FILE__) . '/partials/admin.inc');
+	}
+
+	function wpcontent_path() { return ABSPATH . '/wp-content'; }
+	// @codeCoverageIgnoreEnd
+
+	function find_fixtures() {
+		$this->fixtures = array();
+
+		$this->_find_fixtures_recurse($this->wpcontent_path());
+
+		return $this->fixtures;
+	}
+
+	function _find_fixtures_recurse($dir) {
+		$queue = array();
+		$dh = opendir($dir);
+		$is_fixture_dir = (basename($dir) === 'fixtures');
+		while ($file = readdir($dh)) {
+		  if ($file[0] != '.') {
+				$target = $dir . '/' . $file;
+				if ($is_fixture_dir) {
+					if (is_file($target)) {
+						if (preg_match('#\.(inc|json)$#', $target) > 0) {
+							$this->fixtures[] = $target;
+						}
+					}
+				} else {
+					if (is_dir($target)) {
+						$queue[] = $target;
+					}
+				}
+			}
+		}
+		closedir($dh);
+
+		foreach ($queue as $dir) {
+			$this->_find_fixtures_recurse($dir);
+		}
 	}
 
 	// data handling

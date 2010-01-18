@@ -47,6 +47,8 @@ class FixtureBuilderTest extends PHPUnit_Framework_TestCase {
 					array('date', array('2010-01-01')),
 					array('categories', array('test,test2')),
 					array('metadata', array('key', array('metadata' => 'value'))),
+					array('post', array('Post title 2')),
+					array('date', array('2010-01-02')),
 				),
 				array(
 					'post' => array(
@@ -56,10 +58,15 @@ class FixtureBuilderTest extends PHPUnit_Framework_TestCase {
 						 	'post_date'  => '2010-01-01',
 							'categories' => array('test', 'test2'),
 						 	'metadata' => array('key' => array('metadata' => 'value'))
-						)
+						),
+						 array(
+							'post_title' => 'Post title 2',
+							'post_type'  => 'post',
+						 	'post_date'  => '2010-01-02',
+						),
 					),
 				),
-				array(true, true, true, true)
+				array(true, true, true, true, true, true)
 			),
 		);
 	}
@@ -190,5 +197,11 @@ class FixtureBuilderTest extends PHPUnit_Framework_TestCase {
 					break;
 			}
 		}
+	}
+
+	function testBuildEmpty() {
+		$builder = new FixtureBuilder();
+
+		$builder->build();
 	}
 }

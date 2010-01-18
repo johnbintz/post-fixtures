@@ -83,9 +83,6 @@ class FixtureBuilder {
 	function metadata($key, $value) {
 		$this->check_correct_type('post');
 
-		if (!isset($this->current_object['post'])) {
-			$this->current_object['post'] = array();
-		}
 		$this->current_object['post']['metadata'][$key] = $value;
 		return $this;
 	}
@@ -127,6 +124,8 @@ class FixtureBuilder {
 
 			return get_post($post_id);
 		}
+		// @codeCoverageIgnoreStart
 		return false;
+		// @codeCoverageIgnoreEnd
 	}
 }
