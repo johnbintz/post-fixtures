@@ -103,7 +103,7 @@ class PostFixtures {
 	 */
 	// @codeCoverageIgnoreStart
 	function render_admin() {
-
+		$fixtures = $this->find_fixtures();
 
 		include(dirname(__FILE__) . '/partials/admin.inc');
 	}
@@ -115,6 +115,10 @@ class PostFixtures {
 		$this->fixtures = array();
 
 		$this->_find_fixtures_recurse($this->wpcontent_path());
+
+		foreach ($this->fixtures as &$path) {
+			$path = str_replace($this->wpcontent_path() . '/', '', $path);
+		}
 
 		return $this->fixtures;
 	}

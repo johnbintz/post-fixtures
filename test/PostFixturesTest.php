@@ -350,11 +350,11 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 		}
 
 		$pf = $this->getMock('PostFixtures', array('wpcontent_path'));
-		$pf->expects($this->once())->method('wpcontent_path')->will($this->returnValue(vfsStream::url('root')));
+		$pf->expects($this->any())->method('wpcontent_path')->will($this->returnValue(vfsStream::url('root')));
 
 		$this->assertEquals(array(
-			vfsStream::url('root/dir/fixtures/test.json'),
-			vfsStream::url('root/dir/fixtures/test.inc'),
+			'dir/fixtures/test.json',
+			'dir/fixtures/test.inc',
 		), $pf->find_fixtures());
 	}
 }
