@@ -1,40 +1,22 @@
-# Post Fixtures for WordPress
+=== Post Fixtures ===
+Contributors: johncoswell
+Donate link: http://www.coswellproductions.com/wordpress/wordpress-plugins
+Tags: admin, developer, database
+Requires at least: 2.8
+Tested up to: 2.9.1
+Stable tag: 0.2
 
-**Post Fixtures** let you quickly tear down and set up test environments within your development WordPress environment.
+Post Fixtures let you quickly tear down and set up test environments within your development WordPress environment.
+
+== Description ==
+
+Post Fixtures let you quickly tear down and set up test environments within your development WordPress environment.
 This allows you to create post, category, and options configurations to test specific issues and features of your themes and plugins.
-
-## Installing
-
-### From GitHub
-
-Clone the repository into your `wp-content/plugins` directory. Activate it like a normal plugin.
-
-### From WordPress Plugins
-
-Download the plugin from the WordPress plugins repository: http://wordpress.org/extend/plugins/post-fixtures/. Activate it like any other plugin.
-**Post Fixtures** requires PHP 5 or above.
-
-## Using
 
 **Post Fixtures** places a new menu item under *Tools* called *Post Fixtures*.
 When you visit the page, you'll see a large textarea in which to copy and paste your JSON fixture data.
 Submitting the form with valid JSON data will cause your posts and categories to be deleted & overwritten,
 and any options provided to be overwritten or deleted.
-
-## Creating Fixtures
-
-Fixtures for **Post Fixtures** are written in either JSON or PHP.
-
-### JSON
-
-JSON fixtures can be saved anywhere with the theme/plugin you're developing and then copied and pasted into **Post Fixtures** when you need to test specific features.
-
-### PHP
-
-PHP fixtures are saved in a directory within your theme or plugin called `fixtures` with the extension `.inc`.
-See the example fixture under `fixtures/php-ficture.inc` as well as the example below.
-
-### What's Supported?
 
 As of the current release on GitHub, the following WordPress features are supported:
 
@@ -45,15 +27,15 @@ As of the current release on GitHub, the following WordPress features are suppor
 * Tags
 * Blog options with serialization and deletion
 
-## Contributing
+== Installation ==
 
-The best way to contribute is forking the project on GitHub and sending a Pull Request. Be sure to include
-proper unit tests for any extra code you write. If you've found a bug or have a new feature you'd like to see,
-create a new Issue.
+Activate it like any other plugin. **Post Fixtures** requires PHP 5 or above.
 
-## Example Fixture
+== Frequently Asked Questions ==
 
-### JSON
+= What are the data formats accepted? =
+
+**JSON**
 
 <pre>
 {
@@ -91,7 +73,7 @@ create a new Issue.
 }
 </pre>
 
-### PHP
+**PHP**
 
 <pre>
 // build an object immediately, and get the new post's ID
@@ -119,3 +101,15 @@ $builder->option('an-option-to-set', 'simple-string')
         ->option('an-option-to-serialize', array('this' => 'is a hash'))
         ->option('an-option-to-delete', false);
 </pre>
+
+== Changelog ==
+
+= 0.2 =
+
+* Initial release on WordPress Plugins site.
+
+== Upgrade Notice ==
+
+= 0.2 =
+
+* Initial release.

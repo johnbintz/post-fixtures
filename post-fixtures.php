@@ -3,11 +3,11 @@
 Plugin Name: Post Fixtures
 Plugin URI: http://www.coswellproductions.com/wordpress/wordpress-plugins/
 Description: Tear down and build up well crafted posts, categories, meta data, and other WordPress data in a test environment.
-Version: 0.1
+Version: 0.2
 Author: John Bintz
 Author URI: http://www.coswellproductions.com/wordpress/
 
-Copyright 2009 John Bintz  (email : john@coswellproductions.com)
+Copyright 2009-2010 John Bintz  (email : john@coswellproductions.com)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
