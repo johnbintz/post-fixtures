@@ -59,6 +59,13 @@ class FixtureBuilder {
 		return $this;
 	}
 
+	function tags($tags) {
+		$this->check_correct_type('post');
+
+		$this->current_object['post']['tags'] = explode(',', $tags);
+		return $this;
+	}
+
 	function defer() {
 		if (!empty($this->current_object)) {
 			$this->ensure_type($this->current_object['type']);
@@ -102,7 +109,7 @@ class FixtureBuilder {
 
 	function build_post($obj) {
 		$post_obj = $obj['post'];
-		foreach (array('categories', 'metadata') as $field) {
+		foreach (array('categories', 'metadata', 'tags') as $field) {
 			unset($post_obj[$field]);
 		}
 		$post_id = PostFixtures::create_post($post_obj);
@@ -122,6 +129,10 @@ class FixtureBuilder {
 				foreach ($obj['post']['metadata'] as $key => $value) {
 					PostFixtures::create_post_metadata($post_id, $key, $value);
 				}
+			}
+
+			if (isset($obj['post']['tags'])) {
+				PostFixtures::create_post_tags($post_id, $obj['post']['tags']);
 			}
 
 			return get_post($post_id);

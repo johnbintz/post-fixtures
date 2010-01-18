@@ -133,6 +133,10 @@ class FixtureBuilderTest extends PHPUnit_Framework_TestCase {
 					array(
 						'metadata',
 						array('test', 'test2')
+					),
+					array(
+						'tags',
+						array('tag1,tag2')
 					)
 				),
 				(object)array(
@@ -140,7 +144,7 @@ class FixtureBuilderTest extends PHPUnit_Framework_TestCase {
 					'post_type' => 'post',
 					'post_date' => '2010-01-01',
 					'post_status' => 'publish',
-				'ID' => 1
+					'ID' => 1
 				),
 				array(
 					'posts' => array(
@@ -154,6 +158,9 @@ class FixtureBuilderTest extends PHPUnit_Framework_TestCase {
 					),
 					'categories' => array(
 						1 => 'test'
+					),
+					'tags' => array(
+						1 => array('tag1', 'tag2')
 					),
 					'post_meta' => array(
 						1 => array(

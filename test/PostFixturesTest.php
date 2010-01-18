@@ -163,7 +163,11 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 					)
 				),
 				array(1),
-				array(1 => array(1))
+				array(
+					'categories' => array(
+						1 => array(1)
+					)
+				)
 			),
 			array(
 				array(
@@ -173,7 +177,11 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 					)
 				),
 				array(1),
-				array(1 => array(2))
+				array(
+					'categories' => array(
+						1 => array(2)
+					)
+				)
 			),
 			array(
 				array(
@@ -182,14 +190,24 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 						'categories' => array('test2'),
 						'metadata' => array(
 							'test' => 'test2'
+						),
+						'tags' => array(
+							'tag1', 'tag2'
 						)
 					)
 				),
 				array(1),
-				array(1 => array(2)),
-				array(1 => array(
-					'test' => 'test2'
-				))
+				array(
+					'categories' => array(
+						1 => array(2)
+					),
+					'metadata' => array(
+						1 => array('test' => 'test2')
+					),
+					'tags' => array(
+						1 => array('tag1', 'tag2')
+					)
+				)
 			),
 			array(
 				array(
@@ -199,7 +217,11 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 					)
 				),
 				array(1),
-				array(1 => array(1,3))
+				array(
+					'categories' => array(
+						1 => array(1,3)
+					)
+				)
 			),
 		);
 	}
@@ -207,22 +229,45 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider providerTestCreatePosts
 	 */
-	function testCreatePosts($posts, $expected_post_ids, $expected_post_categories = false, $expected_metadata = false) {
+	function testCreatePosts($posts, $expected_post_ids, $expected_additional_info = false) {
+		global $wp_test_expectations;
+
 		update_option('default_category', 1);
 		wp_insert_category(array('slug' => 'test'));
 
 		$this->assertEquals($expected_post_ids, $this->pf->create_posts($posts, array('test' => 1, 'test2' => 2, 'test2/test3' => 3)));
 
-		if (is_array($expected_post_categories)) {
-			foreach ($expected_post_categories as $post_id => $categories) {
-				$this->assertEquals($categories, wp_get_post_categories($post_id));
-			}
-		}
+		if (is_array($expected_additional_info)) {
+			extract($expected_additional_info);
 
-		if (is_array($expected_metadata)) {
-			foreach ($expected_metadata as $post_id => $metadata_info) {
-				foreach ($metadata_info as $key => $value) {
-					$this->assertEquals($value, get_post_meta($post_id, $key, true));
+			if (isset($categories)) {
+				if (is_array($categories)) {
+					foreach ($categories as $post_id => $cats) {
+						$this->assertEquals($cats, wp_get_post_categories($post_id));
+					}
+				}
+			}
+
+			if (isset($metadata)) {
+				if (is_array($metadata)) {
+					foreach ($metadata as $post_id => $metadata_info) {
+						foreach ($metadata_info as $key => $value) {
+							$this->assertEquals($value, get_post_meta($post_id, $key, true));
+						}
+					}
+				}
+			}
+
+			if (isset($tags)) {
+				if (is_array($tags)) {
+					foreach ($tags as $post_id => $expected_tags) {
+						$post_tags = wp_get_post_tags($post_id);
+						foreach ($post_tags as &$tag) {
+							$tag = $tag->slug;
+						}
+
+						$this->assertEquals($post_tags, $expected_tags);
+					}
 				}
 			}
 		}

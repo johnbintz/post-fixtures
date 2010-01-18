@@ -293,6 +293,10 @@ class PostFixtures {
 							$this->create_post_metadata($id, $key, $value);
 						}
 					}
+
+					if (isset($post['tags'])) {
+						$this->create_post_tags($id, $post['tags']);
+					}
 				}
 			}
 		}
@@ -309,6 +313,10 @@ class PostFixtures {
 
 	function create_post_metadata($post_id, $key, $value) {
 		update_post_meta($post_id, $key, $value);
+	}
+
+	function create_post_tags($post_id, $tags) {
+		wp_set_post_tags($post_id, $tags);
 	}
 
 	function set_post_categories($post_id, $categories) {
