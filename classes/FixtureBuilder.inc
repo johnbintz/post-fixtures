@@ -131,6 +131,7 @@ class FixtureBuilder {
 				$category_ids_by_slug = array();
 				foreach ($obj['post']['categories'] as $category) {
 					$category_ids_by_slug = array_merge($category_ids_by_slug, PostFixtures::create_category($category));
+					var_dump($category_ids_by_slug);
 				}
 				$category_ids = array_values($category_ids_by_slug);
 				PostFixtures::set_post_categories($post_id, $category_ids);

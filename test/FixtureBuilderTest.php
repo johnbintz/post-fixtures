@@ -45,7 +45,7 @@ class FixtureBuilderTest extends PHPUnit_Framework_TestCase {
 				array(
 					array('post', array('Post title')),
 					array('date', array('2010-01-01')),
-					array('categories', array('test,test2')),
+					array('categories', array('test,test2/test3')),
 					array('metadata', array('key', array('metadata' => 'value'))),
 					array('post', array('Post title 2')),
 					array('date', array('2010-01-02')),
@@ -56,7 +56,7 @@ class FixtureBuilderTest extends PHPUnit_Framework_TestCase {
 							'post_title' => 'Post title',
 							'post_type'  => 'post',
 						 	'post_date'  => '2010-01-01',
-							'categories' => array('test', 'test2'),
+							'categories' => array('test', 'test2/test3'),
 						 	'metadata' => array('key' => array('metadata' => 'value'))
 						),
 						 array(
@@ -235,10 +235,20 @@ class FixtureBuilderTest extends PHPUnit_Framework_TestCase {
 		$fb->finalize();
 	}
 
-	function testOption() {
-		$fb = new FixtureBuilder();
-		$fb->option('test', 'value');
+	function providerTestOption() {
+		return array(
+			array('test', 'value', 'value'),
+			array('test2', false, false)
+		);
+	}
 
-		$this->assertEquals('value', get_option('test'));
+	/**
+	 * @dataProvider providerTestOption
+	 */
+	function testOption($key, $value, $expected_value) {
+		$fb = new FixtureBuilder();
+		$fb->option($key, $value);
+
+		$this->assertEquals($expected_value, get_option($key));
 	}
 }

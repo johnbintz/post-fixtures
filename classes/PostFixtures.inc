@@ -5,6 +5,7 @@
  */
 class PostFixtures {
 	var $messages;
+	var $created_categories = array();
 
 	/**
 	 * Initialize the plugin.
@@ -262,7 +263,15 @@ class PostFixtures {
 		$joined_nodes = array();
 		foreach ($nodes as $node) {
 			$joined_nodes[] = $node;
-			$parent = $category_ids_by_slug[implode('/', $joined_nodes)] = wp_insert_category(array('cat_name' => $node, 'category_nicename' => $node, 'category_parent' => $parent));
+			$key = implode('/', $joined_nodes);
+
+			if (isset($this->created_categories[$key])) {
+				$parent = $this->created_categories[$key];
+			} else {
+			  $parent = wp_insert_category(array('cat_name' => $node, 'category_nicename' => $node, 'category_parent' => $parent));
+			  $this->created_categories[$key] = $parent;
+			}
+			$category_ids_by_slug[$key] = $parent;
 		}
 		return $category_ids_by_slug;
 	}

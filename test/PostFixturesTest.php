@@ -138,7 +138,7 @@ class PostFixturesTest extends PHPUnit_Framework_TestCase {
 			array(false, array()),
 			array(array(), array()),
 			array(array('test'), array('test' => 1)),
-			array(array('test/test2'), array('test' => 1, 'test/test2' => 2)),
+			array(array('test/test2', 'test/test3'), array('test' => 1, 'test/test2' => 2, 'test/test3' => 3)),
 		);
 	}
 
