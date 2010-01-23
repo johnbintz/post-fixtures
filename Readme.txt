@@ -4,7 +4,7 @@ Donate link: http://www.coswellproductions.com/wordpress/wordpress-plugins
 Tags: admin, developer, database
 Requires at least: 2.8
 Tested up to: 2.9.1
-Stable tag: 0.2
+Stable tag: 0.2.1
 
 Post Fixtures let you quickly tear down and set up test environments within your development WordPress environment.
 
@@ -104,11 +104,19 @@ $builder->option('an-option-to-set', 'simple-string')
 
 == Changelog ==
 
+= 0.2.1 =
+
+* Bugfix for multiple generated nested categories.
+
 = 0.2 =
 
 * Initial release on WordPress Plugins site.
 
 == Upgrade Notice ==
+
+= 0.2.1 =
+
+* Bugfix for multiple generated nested categories.
 
 = 0.2 =
 
