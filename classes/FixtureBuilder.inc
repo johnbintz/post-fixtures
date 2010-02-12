@@ -131,10 +131,12 @@ class FixtureBuilder {
 			$category_ids  = array();
 			if (isset($obj['post']['categories'])) {
 				$category_ids_by_slug = array();
+				$category_ids = array();
 				foreach ($obj['post']['categories'] as $category) {
-					$category_ids_by_slug = array_merge($category_ids_by_slug, PostFixtures::create_category($category));
+					$created_categories = PostFixtures::create_category($category);
+					$category_ids[] = array_pop(array_values($created_categories));
+					$category_ids_by_slug = array_merge($category_ids_by_slug, $created_categories);
 				}
-				$category_ids = array_values($category_ids_by_slug);
 				PostFixtures::set_post_categories($post_id, $category_ids);
 			}
 

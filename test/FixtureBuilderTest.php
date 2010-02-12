@@ -132,7 +132,7 @@ class FixtureBuilderTest extends PHPUnit_Framework_TestCase {
 					),
 					array(
 						'categories',
-						array('test')
+						array('test/test2')
 					),
 					array(
 						'metadata',
@@ -163,7 +163,8 @@ class FixtureBuilderTest extends PHPUnit_Framework_TestCase {
 						)
 					),
 					'categories' => array(
-						1 => 'test'
+						1 => 'test',
+						2 => 'test2'
 					),
 					'tags' => array(
 						1 => array('tag1', 'tag2')
@@ -172,6 +173,9 @@ class FixtureBuilderTest extends PHPUnit_Framework_TestCase {
 						1 => array(
 							'test' => 'test2'
 						)
+					),
+					'post_categories' => array(
+						1 => array(2)
 					)
 				)
 			),
@@ -206,6 +210,11 @@ class FixtureBuilderTest extends PHPUnit_Framework_TestCase {
 						foreach ($meta_info as $key => $value) {
 							$this->assertEquals($value, get_post_meta($post_id, $key, true));
 						}
+					}
+					break;
+				case 'post_categories':
+					foreach ($info as $post_id => $expected_categories) {
+						$this->assertEquals($expected_categories, wp_get_post_categories($post_id));
 					}
 					break;
 			}
