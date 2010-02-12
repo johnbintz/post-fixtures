@@ -210,6 +210,8 @@ class FixtureBuilderTest extends PHPUnit_Framework_TestCase {
 					break;
 			}
 		}
+
+		$this->assertTrue(!isset($builder->current_object));
 	}
 
 	function testBuildEmpty() {

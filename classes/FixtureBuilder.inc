@@ -84,7 +84,9 @@ class FixtureBuilder {
 	function build() {
 		if (!empty($this->current_object)) {
 			$this->ensure_type($this->current_object['type']);
-			return $this->{"build_{$this->current_object['type']}"}($this->current_object);
+			$result = $this->{"build_{$this->current_object['type']}"}($this->current_object);
+			unset($this->current_object);
+			return $result;
 		}
 	}
 
