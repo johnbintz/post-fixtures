@@ -55,6 +55,7 @@ class PostFixtures {
 			} else {
 				$this->handle_json($info['data']);
 			}
+			wp_cache_flush();
 		}
 	}
 
